@@ -5,8 +5,15 @@ import {
   NodeWithScore,
   VectorStoreIndex,
   storageContextFromDefaults,
+  HuggingFaceEmbedding,
+  Settings
 } from "llamaindex";
 import { v4 as uuidv4 } from 'uuid';
+import dotenv from "dotenv";
+
+dotenv.config()
+
+Settings.llm = HuggingFaceEmbedding.
 
 async function main() {
   // Load essay from abramov.txt in Node
