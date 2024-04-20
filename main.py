@@ -21,8 +21,13 @@ INPUT_DIR = "./files"
 # Supported files extensions
 REQUIRED_EXTS = [
     ".pdf",
-    # ".docx",
-    # ".xlsx"
+    ".doc",
+    ".docx",
+    # ".xls",
+    # ".xlsx",
+    # ^ ! TEST first before enabling
+    ".csv",
+    ".html"
 ]
 # Index storage
 PERSIST_DIR = "./storage"

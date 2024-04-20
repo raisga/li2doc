@@ -1,0 +1,11 @@
+huggingface-hub==0.22.2
+InstructorEmbedding==1.0.1
+llama-index-core==0.10.30
+llama-index-embeddings-huggingface==0.2.0
+llama-index-llms-ollama==0.1.2
+llama-index-llms-openai==0.1.16
+llama-index-llms-openai-like==0.1.3
+llama-index-readers-file==0.1.19
+llamaindex-py-client==0.1.18
+openai==1.23.2
+safetensors==0.4.3

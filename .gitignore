@@ -1,5 +1,8 @@
 node_modules/
 models/
 storage/
+uploads/
 
-.DS_Store
+*.gguf
+
+*.DS_Store
