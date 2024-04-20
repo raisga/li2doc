@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "📝 Prompt > $1 \n\n"
+
 curl -s --location 'http://localhost:3928/v1/chat/completions' \
 --header 'Content-Type: application/json' \
 --data "{

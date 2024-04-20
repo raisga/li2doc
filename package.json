@@ -2,9 +2,8 @@
   "name": "li2doc",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
   "scripts": {
-    "start": "npx tsx index.ts",
+    "start": "python3.12 main.py",
     "serve:mac": "./server/nitro_mac",
     "model:download": "./scripts/download_model.sh",
     "model:load": "./scripts/load_model.sh",
@@ -12,15 +11,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^20.12.7",
-    "@types/uuid": "^9.0.8",
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "llamaindex": "^0.2.10",
-    "uuid": "^9.0.1"
-  }
+  "license": "ISC"
 }

@@ -1,3 +1,5 @@
 node_modules/
 models/
 storage/
+
+.DS_Store

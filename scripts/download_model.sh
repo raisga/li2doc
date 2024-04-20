@@ -6,7 +6,7 @@ eval $(cat '.env' | sed -e '/^#/d;/^\s*$/d' -e 's/\(\w*\)[ \t]*=[ \t]*\(.*\)/\1=
 set +o allexport
 
 # Check if /models/$MODEL_NAME exists, if not, download it
-if [[ ! -f "./models" ]]; then
+if [[ ! -f "./" ]]; then
     echo "📩 Downloading $MODEL_NAME \n\n"
-    wget $MODEL_URL -O ./models/$MODEL_NAME
+    wget $MODEL_URL -O ./$MODEL_NAME
 fi
