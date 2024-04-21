@@ -102,6 +102,21 @@ def create_index(documents: SimpleDirectoryReader) -> VectorStoreIndex:
         index = load_index_from_storage(storage_context)
     return index
 
+def get_query_engine(index: VectorStoreIndex) -> VectorStoreIndex.BaseQueryEngine:
+    print("> Runs query with custom vars")
+    query_engine = index.as_query_engine(
+        similarity_top_k=SIMILARITY_TOP_K,
+        response_mode=RESPONSE_MODE
+    )
+    return query_engine
+
+def get_response(query_engine: VectorStoreIndex.BaseQueryEngine) -> str:
+    print("> Gets response from query prompt")
+    response = query_engine.query(QUERY_PROMPT)
+    print("\n\n\n")
+
+    return response
+
 # MAIN
 # -------------------------------------------------------------------------------------------------------
 async def main() -> None:
@@ -114,20 +129,13 @@ async def main() -> None:
     # 3 - Create index
     print("\n~~ 📝 CREATE INDEX ~~")
     index = create_index(documents)
-
     # 4 - Runs query with custom vars
     print("\n~~ ⌛️ RUN QUERY ~~")
-    print("> Runs query with custom vars")
-    query_engine = index.as_query_engine(
-        similarity_top_k=SIMILARITY_TOP_K,
-        response_mode=RESPONSE_MODE
-    )
-
+    query_engine = get_query_engine(index)
     # 5 - Gets response from query prompt
     print("\n~~ 💬 GET RESPONSE ~~")
-    print("> Gets response from query prompt")
-    response = query_engine.query(QUERY_PROMPT)
-    print("\n\n\n")
+    response = get_response(query_engine)
     print(response)
+    return None
 
 asyncio.run(main())
