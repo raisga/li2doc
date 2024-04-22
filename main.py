@@ -12,14 +12,16 @@ from llama_index.core import (
     SimpleDirectoryReader,
     StorageContext,
     load_index_from_storage,
+    get_response_synthesizer,
     Settings
 )
-from llama_index.core.base.base_query_engine import BaseQueryEngine
 from llama_index.core.embeddings import resolve_embed_model
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 # from openai import AsyncOpenAI
-from fpdf import FPDF, HTMLMixin
+from fpdf import FPDF
 
 # ======================================================================================================
 # CONSTANTS
@@ -45,7 +47,7 @@ MODEL="llama2"
 MODEL_EMBED="BAAI/bge-large-en-v1.5"
 REQUEST_TIMEOUT=60.0
 # Queries values
-SIMILARITY_TOP_K=3
+SIMILARITY_TOP_K=2
 RESPONSE_MODE="tree_summarize"
 QUERY_PROMPT="Given the data provided, please sumarize the content. Show the summary, and sign with: 🐸"
 
@@ -81,8 +83,8 @@ def load_documents() -> SimpleDirectoryReader:
         required_exts=REQUIRED_EXTS,
         recursive=True,
     ).load_data()
-    print(f"input_dir={INPUT_DIR}\n"
-        f"required_exts={REQUIRED_EXTS}"
+    print(f" - input_dir={INPUT_DIR}\n"
+        f" - required_exts={REQUIRED_EXTS}"
     )
     for d in documents:
         print(f" - file found: {d.metadata["file_name"]}")
@@ -105,28 +107,44 @@ def create_index(documents: SimpleDirectoryReader) -> VectorStoreIndex:
         index = load_index_from_storage(storage_context)
     return index
 
-def get_query_engine(index: VectorStoreIndex) -> BaseQueryEngine:
-    print("> Runs query with custom vars")
-    query_engine = index.as_query_engine(
+def get_query_engine(index: VectorStoreIndex) -> RetrieverQueryEngine:
+    print("> Configure retriever")
+    retriever = VectorIndexRetriever(
+        index=index,
         similarity_top_k=SIMILARITY_TOP_K,
-        response_mode=RESPONSE_MODE
+    )
+    print(f" - similarity_top_k={SIMILARITY_TOP_K}")
+    print("> Configure response synthesizer")
+    response_synthesizer = get_response_synthesizer(
+        streaming=True,
+        response_mode=RESPONSE_MODE,
+    )
+    print(f" - response_mode={RESPONSE_MODE}")
+    print("> Assemble query engine ")
+    query_engine = RetrieverQueryEngine(
+        retriever=retriever,
+        response_synthesizer=response_synthesizer,
     )
     return query_engine
 
-def get_response(query_engine: BaseQueryEngine) -> any:
+def get_response(query_engine: RetrieverQueryEngine) -> str:
     print("> Gets response from query prompt")
-    response = query_engine.query(QUERY_PROMPT)
-    print("\n\n\n")
-    print(response)
-    return response
+    response = query_engine.query(
+        str_or_query_bundle=QUERY_PROMPT
+    )
+    print("\n<<<< START RESPONSE >>>>\n")
+    response.print_response_stream()
+    print("\n<<<< END RESPONSE >>>>\n")
+    return response.response_txt
 
 def generate_doc(response: str) -> None:
     print("> Generate document from response")
+    format_response = response.encode('latin-1', 'replace').decode('latin-1')
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font('Arial', 'B', 16)
-    pdf.cell(40, 10, response)
-    pdf.output(DOC_FILENAME, 'F')
+    pdf.set_font('helvetica', size=12)
+    pdf.cell(text=format_response)
+    pdf.output(DOC_FILENAME)
     return None
 
 # MAIN
