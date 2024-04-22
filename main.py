@@ -14,14 +14,18 @@ from llama_index.core import (
     load_index_from_storage,
     Settings
 )
+from llama_index.core.base.base_query_engine import BaseQueryEngine
 from llama_index.core.embeddings import resolve_embed_model
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 # from openai import AsyncOpenAI
+from fpdf import FPDF, HTMLMixin
 
 # ======================================================================================================
 # CONSTANTS
 
+# Output doc filename
+DOC_FILENAME = "output.pdf"
 # Directory where files are located
 INPUT_DIR = "./files"
 # Supported files extensions
@@ -37,7 +41,7 @@ REQUIRED_EXTS = [
 # Index storage
 PERSIST_DIR = "./storage"
 # Model configuration
-MODEL="llama3"
+MODEL="llama2"
 MODEL_EMBED="BAAI/bge-large-en-v1.5"
 REQUEST_TIMEOUT=60.0
 # Queries values
@@ -68,6 +72,7 @@ def config_llm() -> None:
         f" - request_timeout={REQUEST_TIMEOUT}\n"
         f" - model_name={MODEL_EMBED}"
     )
+    return None
 
 def load_documents() -> SimpleDirectoryReader:
     print("> Load documents data")
@@ -80,14 +85,12 @@ def load_documents() -> SimpleDirectoryReader:
         f"required_exts={REQUIRED_EXTS}"
     )
     for d in documents:
-        print(f"file found: {d.metadata["file_name"]}")
+        print(f" - file found: {d.metadata["file_name"]}")
     return documents
 
 def create_index(documents: SimpleDirectoryReader) -> VectorStoreIndex:
     print("> Check if index storage already exists")
     if not os.path.exists(PERSIST_DIR):
-        # print("> Load the documents and create the index")
-        # documents = SimpleDirectoryReader(INPUT_DIR).load_data()
         print("> Creates index storage from documents data chunks")
         index = VectorStoreIndex.from_documents(documents)
         print("> Store data to be used for later use")
@@ -102,7 +105,7 @@ def create_index(documents: SimpleDirectoryReader) -> VectorStoreIndex:
         index = load_index_from_storage(storage_context)
     return index
 
-def get_query_engine(index: VectorStoreIndex) -> VectorStoreIndex.BaseQueryEngine:
+def get_query_engine(index: VectorStoreIndex) -> BaseQueryEngine:
     print("> Runs query with custom vars")
     query_engine = index.as_query_engine(
         similarity_top_k=SIMILARITY_TOP_K,
@@ -110,12 +113,21 @@ def get_query_engine(index: VectorStoreIndex) -> VectorStoreIndex.BaseQueryEngin
     )
     return query_engine
 
-def get_response(query_engine: VectorStoreIndex.BaseQueryEngine) -> str:
+def get_response(query_engine: BaseQueryEngine) -> any:
     print("> Gets response from query prompt")
     response = query_engine.query(QUERY_PROMPT)
     print("\n\n\n")
-
+    print(response)
     return response
+
+def generate_doc(response: str) -> None:
+    print("> Generate document from response")
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(40, 10, response)
+    pdf.output(DOC_FILENAME, 'F')
+    return None
 
 # MAIN
 # -------------------------------------------------------------------------------------------------------
@@ -135,7 +147,9 @@ async def main() -> None:
     # 5 - Gets response from query prompt
     print("\n~~ 💬 GET RESPONSE ~~")
     response = get_response(query_engine)
-    print(response)
+    # 6 - Generate document from response
+    print("\n~~ 💾 GENERATE DOC ~~")
+    generate_doc(response)
     return None
 
 asyncio.run(main())

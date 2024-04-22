@@ -1,4 +1,5 @@
 docx2txt==0.8.0
+fpdf==1.7.2
 huggingface-hub==0.22.2
 llama-index-agent-openai==0.2.2 
 llama-index-core==0.10.30
