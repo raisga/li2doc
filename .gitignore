@@ -5,3 +5,4 @@ uploads/
 *.gguf
 *.DS_Store
 output.pdf
+__pycache__/

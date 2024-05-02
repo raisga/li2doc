@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "python3.12 main.py",
+    "start": "python3.12 li2doc/app.py",
     "serve:mac": "./server/nitro_mac",
     "model:download": "./scripts/download_model.sh",
     "model:load": "./scripts/load_model.sh",
