@@ -1,6 +1,17 @@
 # li2doc
 
-Python script that generates a summarized document from multiple files of different types (pdf, doc, csv, html, etc...).
+Python app that generates a summarized document from multiple files of different types (pdf, doc, csv, html, etc...).
+
+This project implements a Retrieval-Augmented Generation (RAG) pipeline, using LlamaIndex.
+
+## About (Flowchart)
+
+- The system first retrieves relevant text passages from a data chunks derivated from defined documents (files/).
+- The retrieved passages are then used as input for a language generation model, which generates a summary or response that incorporates information and ideas from the original passages. 
+- This generated response is intended to be more coherent, informative, and relevant to the user's query than a traditional generation-only approach.
+- The flowchart ends with the successful creation and saving of the PDF file, allowing users to easily review and reference their responses in a convenient format.
+
+![flowchart](./li2doc/assets/flowchart.jpg)
 
 ## Requirements
 
